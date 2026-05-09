@@ -1,0 +1,19 @@
+node_modules/
+.svelte-kit/
+build/
+.vercel/
+
+# 環境変数（秘密鍵を含む — 絶対コミットしないこと）
+.env
+.env.local
+.env.*.local
+
+# Firebase サービスアカウントキー
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+
+# OS
+.DS_Store
+Thumbs.db

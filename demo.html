@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>テック部クラファン — デモ</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { -webkit-font-smoothing: antialiased; }
+  body { background: #f5f5f7; font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kino Gothic ProN", sans-serif; }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* Heat bar pulse animations */
+  @keyframes fade { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .pulse-slow   { animation: fade 2.8s ease-in-out infinite; }
+  .pulse-medium { animation: fade 1.7s ease-in-out infinite; }
+  .pulse-fast   { animation: fade 1.0s ease-in-out infinite; }
+
+  /* Stripe for failed */
+  .stripe {
+    background: repeating-linear-gradient(-55deg,#e5e7eb 0px,#e5e7eb 3px,#f3f4f6 3px,#f3f4f6 8px);
+  }
+
+  /* Subtle card hover */
+  .card-link { transition: box-shadow .18s, transform .18s; }
+  .card-link:hover { box-shadow: 0 4px 18px rgba(0,0,0,.08); transform: translateY(-1px); }
+  .card-link:active { transform: scale(.99); }
+
+  /* Button press */
+  .btn { transition: background .15s, transform .12s; }
+  .btn:active { transform: scale(.98); }
+
+  /* Form fields */
+  .field { background: transparent; border: none; outline: none; width: 100%; font-size: 15px; color: #111; }
+  .field::placeholder { color: #ccc; }
+
+  /* Range slider */
+  input[type=range] { accent-color: #111; }
+
+  /* Scroll */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #ddd; border-radius: 9px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: HOME
+═══════════════════════════════════════════════ -->
+<div id="screen-home" class="screen active min-h-screen">
+  <!-- Navbar -->
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
+      <h1 class="text-[15px] font-semibold text-gray-900 tracking-tight">テック部クラファン</h1>
+      <button onclick="go('new')"
+        class="inline-flex items-center gap-1.5 text-[13px] font-medium text-blue-600 hover:text-blue-500 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+        </svg>
+        提案する
+      </button>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-5 py-8 space-y-10">
+
+    <!-- 募集中 -->
+    <section>
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">募集中 · 3件</h2>
+      <div class="space-y-3">
+
+        <!-- Item 1: heat 3 (かなり盛り上がり) -->
+        <button onclick="go('detail-open')" class="card-link block bg-white rounded-2xl overflow-hidden w-full text-left">
+          <div class="flex">
+            <div class="w-24 shrink-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" class="text-slate-300">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="flex-1 px-4 py-3.5 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <p class="text-[14px] font-semibold text-gray-900 leading-snug">ミラーレスカメラ Sony α7C II</p>
+                <span class="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">募集中</span>
+              </div>
+              <p class="text-[12px] text-gray-400 mb-2.5">部活動の撮影・記録用として購入したい</p>
+              <div class="flex items-center gap-3">
+                <div>
+                  <p class="text-[12px] font-semibold text-gray-900">¥320,000</p>
+                  <p class="text-[10px] text-gray-400">10人で割り勘</p>
+                </div>
+                <div class="flex-1">
+                  <div class="h-[3px] bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full pulse-fast" style="width:84%;background:#ef4444"/>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">締切まで 2日</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </button>
+
+        <!-- Item 2: heat 2 (熱気が高まってる) -->
+        <button onclick="go('detail-open2')" class="card-link block bg-white rounded-2xl overflow-hidden w-full text-left">
+          <div class="flex">
+            <div class="w-24 shrink-0 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1" class="text-amber-300">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+              </svg>
+            </div>
+            <div class="flex-1 px-4 py-3.5 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <p class="text-[14px] font-semibold text-gray-900">コンデンサーマイク SET</p>
+                <span class="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">募集中</span>
+              </div>
+              <p class="text-[12px] text-gray-400 mb-2.5">動画・ポッドキャスト収録の音質向上のため</p>
+              <div class="flex items-center gap-3">
+                <div>
+                  <p class="text-[12px] font-semibold text-gray-900">¥45,000</p>
+                  <p class="text-[10px] text-gray-400">6人で割り勘</p>
+                </div>
+                <div class="flex-1">
+                  <div class="h-[3px] bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full pulse-medium" style="width:58%;background:#f59e0b"/>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">締切まで 5日</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </button>
+
+        <!-- Item 3: heat 1 (動き始めた) -->
+        <button onclick="alert('詳細画面（heat level 1）')" class="card-link block bg-white rounded-2xl overflow-hidden w-full text-left">
+          <div class="flex">
+            <div class="w-24 shrink-0 bg-gray-50 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.2" class="text-gray-300">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+            </div>
+            <div class="flex-1 px-4 py-3.5 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <p class="text-[14px] font-semibold text-gray-900">三脚 + スライダーセット</p>
+                <span class="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">募集中</span>
+              </div>
+              <p class="text-[12px] text-gray-400 mb-2.5">動画撮影の安定性向上のため</p>
+              <div class="flex items-center gap-3">
+                <div>
+                  <p class="text-[12px] font-semibold text-gray-900">¥28,000</p>
+                  <p class="text-[10px] text-gray-400">8人で割り勘</p>
+                </div>
+                <div class="flex-1">
+                  <div class="h-[3px] bg-gray-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full pulse-slow" style="width:30%;background:#60a5fa"/>
+                  </div>
+                  <p class="text-[10px] text-gray-400 mt-1">締切まで 12日</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- 成立済み -->
+    <section>
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">成立済み · 1件</h2>
+      <div class="space-y-3">
+        <button onclick="go('detail-funded')" class="card-link flex items-center gap-4 bg-white rounded-2xl px-4 py-3.5 w-full text-left">
+          <div class="flex-1 min-w-0">
+            <p class="text-[14px] font-semibold text-gray-900 truncate">MacBook Pro 14インチ M3</p>
+            <p class="text-[12px] text-gray-400 mt-0.5">1人 ¥40,000（5人）</p>
+          </div>
+          <span class="shrink-0 text-[11px] font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-600">成立</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 終了 -->
+    <section>
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">終了済み</h2>
+      <div class="space-y-2">
+        <div class="flex items-center gap-3 bg-white/60 rounded-xl px-4 py-3">
+          <p class="flex-1 text-[13px] text-gray-400 truncate">外付けSSD 2TB</p>
+          <p class="shrink-0 text-[12px] text-gray-400">¥18,000</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DETAIL (open, heat=3, 未賛同)
+═══════════════════════════════════════════════ -->
+<div id="screen-detail-open" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('home')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="flex-1 text-[15px] font-semibold text-gray-900 truncate tracking-tight">ミラーレスカメラ Sony α7C II</span>
+      <button onclick="go('edit')" class="shrink-0 text-[13px] font-medium text-blue-600 hover:text-blue-500 transition-colors">編集</button>
+      <span class="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">募集中</span>
+    </div>
+  </header>
+
+  <main class="max-w-2xl mx-auto px-5 py-8 space-y-4">
+    <!-- アイテムカード -->
+    <section class="bg-white rounded-2xl overflow-hidden">
+      <div class="aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.8" class="text-slate-300">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <h1 class="text-[22px] font-bold text-gray-900" style="letter-spacing:-.02em;line-height:1.2">ミラーレスカメラ Sony α7C II</h1>
+          <p class="mt-2 text-[14px] text-gray-500 leading-relaxed">部活動の活動記録・動画コンテンツ制作に使用したい。現状スマホ撮影のため画質に限界があり、本格的な機材が必要です。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">総額</p>
+            <p class="text-[18px] font-bold text-gray-900" style="letter-spacing:-.02em">¥320,000</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">目標人数</p>
+            <p class="text-[18px] font-bold text-gray-900">10<span class="text-[13px] font-normal text-gray-500 ml-1">人</span></p>
+            <p class="text-[10px] text-gray-400 mt-0.5">目安 ¥32,000/人</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-[13px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/></svg>
+          <span>5月9日 23:59まで <span class="font-medium text-gray-600">（残り2日）</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 熱量インジケーター -->
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">募集の熱量</h2>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-800">かなり盛り上がってる</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">締め切りが近いかもしれない</p>
+          </div>
+          <span class="text-[11px] text-gray-300 italic">人数は非公開</span>
+        </div>
+        <div class="relative h-[5px] bg-gray-100 rounded-full overflow-hidden">
+          <div class="absolute left-0 top-0 h-full rounded-full pulse-fast" style="width:84%;background:#ef4444;transition:width 1.4s cubic-bezier(.34,1.56,.64,1)"/>
+        </div>
+        <p class="text-[10px] text-gray-300 leading-relaxed">正確な参加人数は締め切りまで公開されません。あなたの判断が結果を左右します。</p>
+      </div>
+    </section>
+
+    <!-- 賛同エリア -->
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <div class="mb-4">
+        <p class="text-[14px] font-semibold text-gray-800 mb-1">このアイテムを購入しますか？</p>
+        <p class="text-[12px] text-gray-400 leading-relaxed">目標人数に達した時点で、1人あたり ¥32,000 の支払い義務が確定します。賛同後のキャンセルはできません。</p>
+      </div>
+      <button onclick="go('detail-committed')"
+        class="btn w-full py-3.5 rounded-xl bg-gray-900 text-white text-[14px] font-semibold hover:bg-gray-700"
+        style="letter-spacing:-.01em">
+        賛同する
+      </button>
+    </section>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DETAIL (open, heat=2, 別アイテム)
+═══════════════════════════════════════════════ -->
+<div id="screen-detail-open2" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('home')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="flex-1 text-[15px] font-semibold text-gray-900 truncate tracking-tight">コンデンサーマイク SET</span>
+      <span class="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">募集中</span>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-5 py-8 space-y-4">
+    <section class="bg-white rounded-2xl overflow-hidden">
+      <div class="aspect-[16/9] bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.8" class="text-amber-300">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+        </svg>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <h1 class="text-[22px] font-bold text-gray-900" style="letter-spacing:-.02em">コンデンサーマイク SET</h1>
+          <p class="mt-2 text-[14px] text-gray-500 leading-relaxed">動画撮影・ポッドキャスト収録の音質向上のため。Blue Yeti + ポップガード + アームのセットを検討中。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">総額</p>
+            <p class="text-[18px] font-bold text-gray-900" style="letter-spacing:-.02em">¥45,000</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">目標人数</p>
+            <p class="text-[18px] font-bold text-gray-900">6<span class="text-[13px] font-normal text-gray-500 ml-1">人</span></p>
+            <p class="text-[10px] text-gray-400 mt-0.5">目安 ¥7,500/人</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-[13px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/></svg>
+          <span>5月12日 23:59まで <span class="font-medium text-gray-600">（残り5日）</span></span>
+        </div>
+      </div>
+    </section>
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">募集の熱量</h2>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-800">熱気が高まってる</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">このまま乗り遅れるかも</p>
+          </div>
+          <span class="text-[11px] text-gray-300 italic">人数は非公開</span>
+        </div>
+        <div class="relative h-[5px] bg-gray-100 rounded-full overflow-hidden">
+          <div class="absolute left-0 top-0 h-full rounded-full pulse-medium" style="width:58%;background:#f59e0b"/>
+        </div>
+        <p class="text-[10px] text-gray-300 leading-relaxed">正確な参加人数は締め切りまで公開されません。あなたの判断が結果を左右します。</p>
+      </div>
+    </section>
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <!-- 賛同済み状態を表示 -->
+      <div class="flex items-center gap-3 py-1">
+        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" class="text-green-500">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-[14px] font-semibold text-gray-800">賛同済み</p>
+          <p class="text-[12px] text-gray-400">5月6日 14:32 に参加</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DETAIL (committed → 賛同後)
+═══════════════════════════════════════════════ -->
+<div id="screen-detail-committed" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('home')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="flex-1 text-[15px] font-semibold text-gray-900 truncate tracking-tight">ミラーレスカメラ Sony α7C II</span>
+      <span class="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-600">募集中</span>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-5 py-8 space-y-4">
+    <section class="bg-white rounded-2xl overflow-hidden">
+      <div class="aspect-[16/9] bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.8" class="text-slate-300">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <h1 class="text-[22px] font-bold text-gray-900" style="letter-spacing:-.02em">ミラーレスカメラ Sony α7C II</h1>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">総額</p>
+            <p class="text-[18px] font-bold text-gray-900" style="letter-spacing:-.02em">¥320,000</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">目標人数</p>
+            <p class="text-[18px] font-bold text-gray-900">10<span class="text-[13px] font-normal text-gray-500 ml-1">人</span></p>
+            <p class="text-[10px] text-gray-400 mt-0.5">目安 ¥32,000/人</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 text-[13px] text-gray-400">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z"/></svg>
+          <span>5月9日 23:59まで <span class="font-medium text-red-500">（本日締め切り）</span></span>
+        </div>
+      </div>
+    </section>
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <h2 class="text-[11px] font-semibold text-gray-400 uppercase tracking-widest mb-4">募集の熱量</h2>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[13px] font-semibold text-gray-800">かなり盛り上がってる</p>
+            <p class="text-[11px] text-gray-400 mt-0.5">締め切りが近いかもしれない</p>
+          </div>
+          <span class="text-[11px] text-gray-300 italic">人数は非公開</span>
+        </div>
+        <div class="relative h-[5px] bg-gray-100 rounded-full overflow-hidden">
+          <div class="absolute left-0 top-0 h-full rounded-full pulse-fast" style="width:84%;background:#ef4444"/>
+        </div>
+        <p class="text-[10px] text-gray-300 leading-relaxed">正確な参加人数は締め切りまで公開されません。あなたの判断が結果を左右します。</p>
+      </div>
+    </section>
+    <!-- 賛同済み -->
+    <section class="bg-white rounded-2xl px-6 py-5">
+      <div class="flex items-center gap-3 py-1">
+        <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" class="text-green-500"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div>
+          <p class="text-[14px] font-semibold text-gray-800">賛同済み</p>
+          <p class="text-[12px] text-gray-400">5月7日 12:04 に参加</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DETAIL (funded, 支払い状況)
+═══════════════════════════════════════════════ -->
+<div id="screen-detail-funded" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('home')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <span class="flex-1 text-[15px] font-semibold text-gray-900 truncate tracking-tight">MacBook Pro 14インチ M3</span>
+      <span class="shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-green-50 text-green-600">成立</span>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-5 py-8 space-y-4">
+    <section class="bg-white rounded-2xl overflow-hidden">
+      <div class="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="0.8" class="text-gray-300">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div>
+          <h1 class="text-[22px] font-bold text-gray-900" style="letter-spacing:-.02em">MacBook Pro 14インチ M3</h1>
+          <p class="mt-2 text-[14px] text-gray-500 leading-relaxed">部室の共用PCとして。現状のPCが老朽化しており、開発・発表用として新調したい。</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">総額</p>
+            <p class="text-[18px] font-bold text-gray-900" style="letter-spacing:-.02em">¥200,000</p>
+          </div>
+          <div class="bg-gray-50 rounded-xl px-4 py-3">
+            <p class="text-[11px] text-gray-400 mb-1">1人あたり（確定）</p>
+            <p class="text-[18px] font-bold text-green-600" style="letter-spacing:-.02em">¥40,000</p>
+            <p class="text-[10px] text-gray-400 mt-0.5">5人で割り勘</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 支払い状況 -->
+    <section class="bg-white rounded-2xl px-6 py-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[14px] font-bold text-gray-900">支払い状況</h2>
+        <span class="text-[12px] text-gray-400">3/5人完了</span>
+      </div>
+
+      <div class="h-[5px] bg-gray-100 rounded-full overflow-hidden">
+        <div class="h-full bg-green-400 rounded-full" style="width:60%;transition:width .7s ease-out"/>
+      </div>
+
+      <div class="bg-amber-50 rounded-xl px-4 py-3">
+        <p class="text-[12px] text-amber-700 text-center">全員が支払いを完了するまで発注に進めません</p>
+      </div>
+
+      <ul class="space-y-2.5">
+        <!-- paid -->
+        <li class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+            <span class="text-[13px] font-semibold text-blue-500">田</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-gray-800">田中 健太 <span class="text-[11px] font-normal text-gray-400">（自分）</span></p>
+            <p class="text-[11px] text-gray-400">5月5日 18:30</p>
+          </div>
+          <span class="shrink-0 inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            支払済
+          </span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center shrink-0">
+            <span class="text-[13px] font-semibold text-purple-500">佐</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-gray-800">佐藤 みなみ</p>
+            <p class="text-[11px] text-gray-400">5月6日 09:12</p>
+          </div>
+          <span class="shrink-0 inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            支払済
+          </span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+            <span class="text-[13px] font-semibold text-green-600">鈴</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-gray-800">鈴木 拓海</p>
+            <p class="text-[11px] text-gray-400">5月6日 21:45</p>
+          </div>
+          <span class="shrink-0 inline-flex items-center gap-1 text-[11px] font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            支払済
+          </span>
+        </li>
+        <!-- unpaid -->
+        <li class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+            <span class="text-[13px] font-semibold text-gray-400">伊</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-gray-800">伊藤 さくら</p>
+          </div>
+          <span class="shrink-0 text-[11px] font-semibold text-red-400 bg-red-50 px-2.5 py-1 rounded-full">未払い</span>
+        </li>
+        <li class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+            <span class="text-[13px] font-semibold text-gray-400">渡</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-[13px] font-medium text-gray-800">渡辺 大輝</p>
+          </div>
+          <span class="shrink-0 text-[11px] font-semibold text-red-400 bg-red-50 px-2.5 py-1 rounded-full">未払い</span>
+        </li>
+      </ul>
+    </section>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: CREATE
+═══════════════════════════════════════════════ -->
+<div id="screen-new" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('home')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <h1 class="text-[15px] font-semibold text-gray-900 tracking-tight">アイテムを提案</h1>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-5 py-8">
+    <div class="space-y-4">
+      <div class="bg-white rounded-2xl divide-y divide-gray-100 overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">アイテム名 <span class="text-red-400">*</span></label>
+          <input class="field" placeholder="例：ミラーレスカメラ、マイク、三脚など" />
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">購入理由 <span class="text-red-400">*</span></label>
+          <textarea class="field resize-none leading-relaxed" rows="3" placeholder="なぜ必要か・どう使うかを書いてください"></textarea>
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">商品ページのURL（任意）</label>
+          <input class="field text-[14px]" type="url" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl divide-y divide-gray-100 overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">総額（円）<span class="text-red-400">*</span></label>
+          <div class="flex items-baseline gap-2">
+            <span class="text-[15px] text-gray-400">¥</span>
+            <input id="demo-cost" class="field" type="number" placeholder="例：45000" oninput="updatePerPerson()" />
+          </div>
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">目標人数 <span class="text-red-400">*</span></label>
+          <div class="flex items-center gap-4">
+            <input id="demo-count" type="range" min="2" max="20" value="4" class="flex-1" oninput="updatePerPerson(); document.getElementById('count-label').textContent=this.value+'人'" />
+            <span id="count-label" class="w-16 text-right text-[15px] font-semibold text-gray-900 tabular-nums">4人</span>
+          </div>
+        </div>
+        <div id="per-person-row" class="px-5 py-4 flex items-center justify-between bg-gray-50 hidden">
+          <p class="text-[12px] text-gray-500">1人あたりの目安</p>
+          <p id="per-person-val" class="text-[16px] font-bold text-gray-900"></p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">締め切り日時 <span class="text-red-400">*</span></label>
+          <input class="field text-[14px]" type="datetime-local" />
+        </div>
+      </div>
+
+      <button onclick="go('home')"
+        class="btn w-full py-4 rounded-2xl bg-gray-900 text-white text-[15px] font-semibold hover:bg-gray-700"
+        style="letter-spacing:-.01em">
+        提案を投稿する
+      </button>
+      <p class="text-[11px] text-gray-400 text-center leading-relaxed">目標人数に達した時点で参加者全員に支払い義務が生まれます。</p>
+    </div>
+  </main>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: EDIT
+═══════════════════════════════════════════════ -->
+<div id="screen-edit" class="screen min-h-screen">
+  <header class="bg-white/90 backdrop-blur-xl border-b border-black/[0.06] sticky top-0 z-20">
+    <div class="max-w-2xl mx-auto px-5 h-14 flex items-center gap-3">
+      <button onclick="go('detail-open')" class="text-gray-400 hover:text-gray-600 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      </button>
+      <h1 class="text-[15px] font-semibold text-gray-900 tracking-tight">内容を編集</h1>
+    </div>
+  </header>
+  <main class="max-w-2xl mx-auto px-5 py-8">
+    <div class="space-y-4">
+      <div class="flex items-start gap-2.5 bg-amber-50 rounded-2xl px-4 py-3.5 mb-2">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="text-amber-500 shrink-0 mt-0.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        </svg>
+        <p class="text-[12px] text-amber-700 leading-relaxed">金額・人数を変更すると、すでに賛同した部員に影響が出る場合があります。変更前に周知しましょう。</p>
+      </div>
+
+      <div class="bg-white rounded-2xl divide-y divide-gray-100 overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">アイテム名</label>
+          <input class="field" value="ミラーレスカメラ Sony α7C II" />
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">購入理由</label>
+          <textarea class="field resize-none leading-relaxed" rows="3">部活動の活動記録・動画コンテンツ制作に使用したい。</textarea>
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">商品ページのURL（任意）</label>
+          <input class="field text-[14px]" value="" placeholder="https://..." />
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl divide-y divide-gray-100 overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">総額（円）</label>
+          <div class="flex items-baseline gap-2">
+            <span class="text-[15px] text-gray-400">¥</span>
+            <input id="edit-cost" class="field" type="number" value="320000" oninput="updateEditPerPerson()" />
+          </div>
+        </div>
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">目標人数</label>
+          <div class="flex items-center gap-4">
+            <input id="edit-count" type="range" min="2" max="20" value="10" class="flex-1" oninput="updateEditPerPerson(); document.getElementById('edit-count-label').textContent=this.value+'人'" />
+            <span id="edit-count-label" class="w-16 text-right text-[15px] font-semibold text-gray-900 tabular-nums">10人</span>
+          </div>
+        </div>
+        <div class="px-5 py-4 flex items-center justify-between bg-gray-50">
+          <p class="text-[12px] text-gray-500">1人あたりの目安</p>
+          <p id="edit-per-person-val" class="text-[16px] font-bold text-gray-900">¥32,000</p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl overflow-hidden">
+        <div class="px-5 py-4">
+          <label class="block text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2">締め切り日時</label>
+          <input class="field text-[14px]" type="datetime-local" value="2026-05-09T23:59" />
+        </div>
+      </div>
+
+      <button onclick="go('detail-open')"
+        class="btn w-full py-4 rounded-2xl bg-gray-900 text-white text-[15px] font-semibold hover:bg-gray-700"
+        style="letter-spacing:-.01em">
+        変更を保存する
+      </button>
+    </div>
+  </main>
+</div>
+
+
+<script>
+// ── 画面遷移 ──────────────────────────────────
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) { el.classList.add('active'); window.scrollTo(0, 0); }
+}
+
+// ── 1人あたり計算（作成フォーム） ──────────────
+function updatePerPerson() {
+  const cost  = parseInt(document.getElementById('demo-cost').value, 10);
+  const count = parseInt(document.getElementById('demo-count').value, 10);
+  const row   = document.getElementById('per-person-row');
+  const val   = document.getElementById('per-person-val');
+  if (cost > 0 && count > 0) {
+    const pp = Math.ceil(cost / count);
+    val.textContent = '¥' + pp.toLocaleString('ja-JP');
+    row.classList.remove('hidden');
+  } else {
+    row.classList.add('hidden');
+  }
+}
+
+// ── 1人あたり計算（編集フォーム） ──────────────
+function updateEditPerPerson() {
+  const cost  = parseInt(document.getElementById('edit-cost').value, 10);
+  const count = parseInt(document.getElementById('edit-count').value, 10);
+  const val   = document.getElementById('edit-per-person-val');
+  if (cost > 0 && count > 0) {
+    val.textContent = '¥' + Math.ceil(cost / count).toLocaleString('ja-JP');
+  }
+}
+</script>
+</body>
+</html>

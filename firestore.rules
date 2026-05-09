@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── ヘルパー関数 ───────────────────────────────────────────────────────
+
+    // ログイン済みかどうか
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // 対象アイテムのドキュメントを取得
+    function getItem(itemId) {
+      return get(/databases/$(database)/documents/items/$(itemId)).data;
+    }
+
+    // ─── users コレクション ─────────────────────────────────────────────────
+    match /users/{userId} {
+      // 自分のプロフィールのみ読み書き可能
+      allow read:  if isAuthenticated();
+      allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // ─── items コレクション ─────────────────────────────────────────────────
+    match /items/{itemId} {
+      // 読み取り：ログイン済みなら誰でも可
+      // ただし currentCount フィールドはセキュリティルールでは隠せないため、
+      // サーバーサイド（SvelteKit load 関数）で currentCount を除外して渡すこと
+      allow read: if isAuthenticated();
+
+      // 作成：ログイン済みなら可（自分が creator になる）
+      allow create: if isAuthenticated()
+        && request.resource.data.creatorId == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.currentCount == 0
+        && request.resource.data.heatLevel == 0;
+
+      // 更新：クライアントからは限定的なフィールドのみ許可
+      // currentCount と heatLevel の更新は Cloud Functions のみが行う
+      allow update: if isAuthenticated()
+        && resource.data.creatorId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'updatedAt'])   // creatorが変更できるのは status のみ
+        && isValidStatusTransition(resource.data.status, request.resource.data.status);
+
+      // 削除：作成者のみ・かつ open ステータスのみ
+      allow delete: if isAuthenticated()
+        && resource.data.creatorId == request.auth.uid
+        && resource.data.status == 'open';
+
+      // ─── commitments サブコレクション ──────────────────────────────────
+      match /commitments/{userId} {
+        // 読み取りルール（ブラインド方式の核心）:
+        // - status が 'open' の間は自分のドキュメントのみ閲覧可能
+        // - status が 'funded' 以降は全員のドキュメントが閲覧可能（心理的プレッシャー）
+        allow read: if isAuthenticated()
+          && (
+            request.auth.uid == userId                        // 自分自身
+            || getItem(itemId).status != 'open'              // 募集終了後は全員公開
+          );
+
+        // 作成：自分自身のコミットのみ・かつ status が 'open' の間のみ
+        allow create: if isAuthenticated()
+          && request.auth.uid == userId
+          && getItem(itemId).status == 'open'
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.status == 'committed'
+          && request.resource.data.paidAt == null;
+
+        // 更新：自分自身のドキュメントのみ・status を 'paid' にするのみ許可
+        allow update: if isAuthenticated()
+          && request.auth.uid == userId
+          && resource.data.status == 'committed'
+          && request.resource.data.status == 'paid'
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['status', 'paidAt']);
+
+        // 削除：不可（キャンセル禁止）
+        allow delete: if false;
+      }
+    }
+
+    // ─── ヘルパー：ステータス遷移バリデーション ─────────────────────────────
+    function isValidStatusTransition(from, to) {
+      return (from == 'open'   && to == 'funded')   // 手動確定（通常はCloud Functionsが行う）
+          || (from == 'funded' && to == 'ordered');  // 発注済みへ
+    }
+  }
+}
