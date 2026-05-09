@@ -1,7 +1,6 @@
 {
   "experimentalServices": {
     "web": {
-      "runtime": "nodejs20.x",
       "routePrefix": "/"
     }
   }
