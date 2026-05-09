@@ -7,12 +7,11 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
-// $env/static/private は値が未設定でも undefined を返す（型は string だが実態は違う）
-import {
-  FIREBASE_PROJECT_ID,
-  FIREBASE_CLIENT_EMAIL,
-  FIREBASE_PRIVATE_KEY,
-} from '$env/static/private';
+// dynamic/private を使うことでビルド時ではなく実行時に解決する
+import { env } from '$env/dynamic/private';
+const FIREBASE_PROJECT_ID  = env.FIREBASE_PROJECT_ID  ?? '';
+const FIREBASE_CLIENT_EMAIL = env.FIREBASE_CLIENT_EMAIL ?? '';
+const FIREBASE_PRIVATE_KEY  = env.FIREBASE_PRIVATE_KEY  ?? '';
 
 export const isFirebaseConfigured =
   !!FIREBASE_PROJECT_ID && !!FIREBASE_CLIENT_EMAIL && !!FIREBASE_PRIVATE_KEY;
