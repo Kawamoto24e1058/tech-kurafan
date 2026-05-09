@@ -150,11 +150,10 @@
                   viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" class="text-gray-400">
                   <path stroke-linecap="round" stroke-linejoin="round"
                     d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M13.5 12h.008v.008H13.5V12zm0 0a3 3 0 116 0 3 3 0 01-6 0z"/>
-                  </svg>
-                </div>
-                <p class="text-[12px] font-medium text-gray-500">タップして画像を選択</p>
-                <p class="text-[10px] text-gray-400">JPEG・PNG・WebP（最大500KB）</p>
+                </svg>
               </div>
+              <p class="text-[12px] font-medium text-gray-500">タップして画像を選択</p>
+              <p class="text-[10px] text-gray-400">JPEG・PNG・WebP（最大500KB）</p>
             </button>
           {/if}
           {#if form?.errors?.image}
