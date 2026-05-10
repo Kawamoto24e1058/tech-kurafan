@@ -40,10 +40,8 @@ export async function registerPushNotifications(): Promise<boolean> {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') return false;
 
-    // SW を登録
-    const swReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', {
-      scope: '/',
-    });
+    // layout.svelte で登録済みの sw.js を使う（FCM + PWA キャッシュを一本化）
+    const swReg = await navigator.serviceWorker.ready;
 
     const { getMessaging, getToken } = await import('firebase/messaging');
     const messaging = getMessaging(_app);
