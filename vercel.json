@@ -1,8 +1,0 @@
-{
-  "experimentalServices": {
-    "web": {
-      "framework": "sveltekit",
-      "routePrefix": "/"
-    }
-  }
-}
