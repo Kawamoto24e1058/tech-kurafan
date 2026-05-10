@@ -8,26 +8,21 @@ import { browser } from '$app/environment';
 import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
 
-import {
-  PUBLIC_FIREBASE_API_KEY,
-  PUBLIC_FIREBASE_AUTH_DOMAIN,
-  PUBLIC_FIREBASE_PROJECT_ID,
-  PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  PUBLIC_FIREBASE_APP_ID,
-  PUBLIC_FIREBASE_VAPID_KEY,
-} from '$env/static/public';
+// PUBLIC値はブラウザにも公開されるため直接記述（$env/static/public の Rollup 解決問題を回避）
+const FIREBASE_CONFIG = {
+  apiKey:            'AIzaSyD8f8Vx_Yu6z5S8QQTB41tf26GMucGjlH0',
+  authDomain:        'tech-kurafan.firebaseapp.com',
+  projectId:         'tech-kurafan',
+  messagingSenderId: '316738726094',
+  appId:             '1:316738726094:web:e7e2230e2339dd06b7c89f',
+};
+const VAPID_KEY = 'BMxPqbOoed5xy5TxMIY8pU3BQzuLHALe882rXXkrUVbJEsw9R4fgzuxC8PZVAsNodtk8eBLQ8rNL5C0OwX_1YYU';
 
 let _app: FirebaseApp | null = null;
 let _auth: Auth | null = null;
 
 if (browser) {
-  const firebaseConfig = {
-    apiKey:            PUBLIC_FIREBASE_API_KEY,
-    authDomain:        PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId:         PUBLIC_FIREBASE_PROJECT_ID,
-    messagingSenderId: PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId:             PUBLIC_FIREBASE_APP_ID,
-  };
+  const firebaseConfig = FIREBASE_CONFIG;
   _app  = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
   _auth = getAuth(_app);
 }
@@ -53,7 +48,7 @@ export async function registerPushNotifications(): Promise<boolean> {
     const { getMessaging, getToken } = await import('firebase/messaging');
     const messaging = getMessaging(_app);
     const token = await getToken(messaging, {
-      vapidKey: PUBLIC_FIREBASE_VAPID_KEY,
+      vapidKey: VAPID_KEY,
       serviceWorkerRegistration: swReg,
     });
 

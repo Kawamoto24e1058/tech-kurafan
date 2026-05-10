@@ -4,8 +4,9 @@ import { adminAuth, isFirebaseConfigured } from '$lib/server/firebase-admin';
 import { db } from '$lib/server/db';
 
 // ADMIN_UIDS=uid1,uid2 形式で管理者を指定（未設定時はモックユーザーを管理者扱い）
-import { env } from '$env/dynamic/private';
-const ADMIN_SET = new Set((env.ADMIN_UIDS ?? '').split(',').map(s => s.trim()).filter(Boolean));
+const ADMIN_SET = new Set(
+  (process.env['ADMIN_UIDS'] ?? '').split(',').map(s => s.trim()).filter(Boolean)
+);
 
 export const handle: Handle = async ({ event, resolve }) => {
 

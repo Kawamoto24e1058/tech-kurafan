@@ -4,30 +4,28 @@
  * → /firebase-messaging-sw.js として配信される
  */
 
-import {
-  PUBLIC_FIREBASE_API_KEY,
-  PUBLIC_FIREBASE_AUTH_DOMAIN,
-  PUBLIC_FIREBASE_PROJECT_ID,
-  PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  PUBLIC_FIREBASE_APP_ID,
-} from '$env/static/public';
-
 export const GET = () => {
+  // process.env で取得（$env/static/public の Rollup 解決問題を回避）
+  const apiKey            = process.env['PUBLIC_FIREBASE_API_KEY']            ?? '';
+  const authDomain        = process.env['PUBLIC_FIREBASE_AUTH_DOMAIN']        ?? '';
+  const projectId         = process.env['PUBLIC_FIREBASE_PROJECT_ID']         ?? '';
+  const messagingSenderId = process.env['PUBLIC_FIREBASE_MESSAGING_SENDER_ID'] ?? '';
+  const appId             = process.env['PUBLIC_FIREBASE_APP_ID']             ?? '';
+
   const sw = `
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey:            "${PUBLIC_FIREBASE_API_KEY}",
-  authDomain:        "${PUBLIC_FIREBASE_AUTH_DOMAIN}",
-  projectId:         "${PUBLIC_FIREBASE_PROJECT_ID}",
-  messagingSenderId: "${PUBLIC_FIREBASE_MESSAGING_SENDER_ID}",
-  appId:             "${PUBLIC_FIREBASE_APP_ID}",
+  apiKey:            "${apiKey}",
+  authDomain:        "${authDomain}",
+  projectId:         "${projectId}",
+  messagingSenderId: "${messagingSenderId}",
+  appId:             "${appId}",
 });
 
 const messaging = firebase.messaging();
 
-// バックグラウンドでプッシュを受け取った時
 messaging.onBackgroundMessage((payload) => {
   const n    = payload.notification ?? {};
   const data = payload.data ?? {};
@@ -43,7 +41,6 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// 通知をクリックした時
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const url = event.notification.data?.url ?? '/';
@@ -60,7 +57,7 @@ self.addEventListener('notificationclick', (event) => {
 
   return new Response(sw, {
     headers: {
-      'Content-Type':          'application/javascript; charset=utf-8',
+      'Content-Type':           'application/javascript; charset=utf-8',
       'Service-Worker-Allowed': '/',
       'Cache-Control':          'no-cache',
     },

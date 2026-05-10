@@ -7,11 +7,10 @@ import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 import { getAuth } from 'firebase-admin/auth';
 
-// dynamic/private を使うことでビルド時ではなく実行時に解決する
-import { env } from '$env/dynamic/private';
-const FIREBASE_PROJECT_ID  = env.FIREBASE_PROJECT_ID  ?? '';
-const FIREBASE_CLIENT_EMAIL = env.FIREBASE_CLIENT_EMAIL ?? '';
-const FIREBASE_PRIVATE_KEY  = env.FIREBASE_PRIVATE_KEY  ?? '';
+// process.env で直接取得（サーバー専用・Rollup の仮想モジュール問題を回避）
+const FIREBASE_PROJECT_ID  = process.env['FIREBASE_PROJECT_ID']  ?? '';
+const FIREBASE_CLIENT_EMAIL = process.env['FIREBASE_CLIENT_EMAIL'] ?? '';
+const FIREBASE_PRIVATE_KEY  = process.env['FIREBASE_PRIVATE_KEY']  ?? '';
 
 export const isFirebaseConfigured =
   !!FIREBASE_PROJECT_ID && !!FIREBASE_CLIENT_EMAIL && !!FIREBASE_PRIVATE_KEY;
